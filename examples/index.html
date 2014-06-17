@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <title>Test of fox-page</title>
+        <link rel="stylesheet" href="../../fox-core/dist/foxui.css">
+        <link rel="stylesheet" href="../../fox-page/dist/fox-page.css">
+        <link rel="stylesheet" href="../../fox-toolbar/dist/fox-toolbar.css">
+        <link rel="stylesheet" href="../../fox-icon/dist/css/fox-icon.css">
+        <link rel="stylesheet" href="../../fox-page-content/dist/fox-page-content.css">
+        <script src="../../fox-core/dist/foxui.js"></script>
+        <link rel="import" href="../../fox-toolbar/dist/fox-toolbar.html"/>
+        <link rel="import" href="../../fox-icon/dist/fox-icon.html"/>
+        <link rel="import" href="../../fox-page-content/dist/fox-page-content.html"/>
+        <link rel="import" href="../../fox-page/dist/fox-page.html"/>
+
+        <link rel="import" href="../dist/fox-ajax.html"/>
+        <style>
+        fox-page-content{
+            padding: 10px;
+        }
+        </style>
+    </head>
+    <body>
+        <fox-page>
+            <fox-toolbar title="Home">
+            </fox-toolbar>
+
+            <fox-page-content>
+                <a href="#" data-book="http://api.douban.com/v2/book/25841479" onclick="document.querySelector('fox-ajax').url=this.getAttribute('data-book')">罗马人的故事</a>
+                <a href="#" data-book="http://api.douban.com/v2/book/25845900" onclick="document.querySelector('fox-ajax').url=this.getAttribute('data-book')">文明史</a>
+                <a href="#" data-book="http://api.douban.com/v2/book/25872258" onclick="document.querySelector('fox-ajax').url=this.getAttribute('data-book')">黄衣王</a>
+
+                <fox-ajax auto url="http://api.douban.com/v2/book/24754123" dataType="jsonp"></fox-ajax>
+
+                <h5>代码</h5>
+                <div id="code" style="font-size:12px;margin: 5px;"></div>
+
+                <h5>内容</h5>
+                <div id="summary"></div>
+            </fox-page-content>
+        </fox-page>
+        <script>
+            document.querySelector('fox-ajax').addEventListener('data-change', function(e){
+                    document.querySelector('#summary').innerHTML = '<div><img src="' + e.detail.newVal.image + '"></div>' + e.detail.newVal.catalog.replace(/\n/g, '<br>');
+
+                    document.querySelector('#code').textContent = this.outerHTML;
+                },
+            false);
+        </script>
+    </body>
+</html>

@@ -1,0 +1,229 @@
+<fox-element name="fox-ajax"  attributes="url dataType params response method jsonp headers contentType">
+
+    <script>
+
+		fox('fox-ajax', {
+            /**
+            * Fired when a response is received.
+            *
+            * @event success
+            */
+
+            /**
+            * Fired when an error is received.
+            *
+            * @event error
+            */
+
+            /**
+            * Fired whenever a response or an error is received.
+            *
+            * @event complete
+            */
+
+            /**
+            * Fired whenever a response is received and diff from old response
+            *
+            * @event data-change
+            */
+
+            /**
+            * The URL target of the request.
+            *
+            * @attribute url
+            * @type string
+            * @default ''
+            */
+            url: '',
+
+            /**
+            * Specifies what data to store in the `response` property, and
+            * to deliver as `event.response` in `response` events.
+            *
+            * One of:
+            *
+            *    `text`: uses `XHR.responseText`.
+            *
+            *    `xml`: uses `XHR.responseXML`.
+            *
+            *    `json`: uses `XHR.responseText` parsed as JSON.
+            *
+            *    `html`: uses `XHR.responseText`.
+            *
+            *    `jsonp`: uses `jsonp callback`.
+            *
+            * @attribute dataType
+            * @type string
+            * @default 'text'
+            */
+            dataType: '',
+
+            /**
+            * If true, automatically performs an Ajax request when either `url` or `params` changes.
+            *
+            * @attribute auto
+            * @type boolean
+            * @default false
+            */
+            auto: false,
+
+            /**
+            * Parameters to send to the specified URL, as JSON.
+            *
+            * @attribute params
+            * @type string (JSON)
+            * @default ''
+            */
+            params: '',
+
+            /**
+            * Returns the response object.
+            *
+            * @attribute response
+            * @type Object
+            * @default null
+            */
+            response: null,
+
+            /**
+            * The HTTP method to use such as 'GET', 'POST', 'PUT', or 'DELETE'.
+            * Default is 'GET'.
+            *
+            * @attribute method
+            * @type string
+            * @default 'GET'
+            */
+            method: '',
+
+            /**
+            * The name of the JSONP callback query parameter.
+            * Default is 'callback'.
+            *
+            * @attribute jsonp
+            * @type string
+            * @default 'callback'
+            */
+            jsonp: '',
+
+            /**
+            * HTTP request headers to send.
+            *
+            * Example:
+            *
+            *     <w-ajax
+            *         auto
+            *         url="http://somesite.com"
+            *         headers='{"X-Requested-With": "XMLHttpRequest"}'
+            *         dataType="json"
+            *         on-success="{{handleResponse}}"></w-ajax>
+            *
+            * @attribute headers
+            * @type Object
+            * @default null
+            */
+            headers: null,
+
+            /**
+            * Content type to use when sending data.
+            *
+            * @attribute contentType
+            * @type string
+            * @default 'application/x-www-form-urlencoded'
+            */
+            contentType: 'application/x-www-form-urlencoded',
+
+			lifecycle : {
+
+                created: function() {
+                    !this.method && (this.method = 'GET');
+                    !this.jsonp && (this.jsonp = 'callback');
+                    !this.contentType && (this.contentType = 'application/x-www-form-urlencoded');
+
+                    this.autoGo();
+                },
+
+                urlChanged: function() {
+                    this.autoGo();
+                },
+
+                paramsChanged: function() {
+                    this.autoGo();
+                }
+			},
+
+            accessors: {
+                auto: {
+                    attribute: {
+                        boolean: true
+                    }
+                }
+            },
+
+            methods: {
+                autoGo: function() {
+                    if (this.hasAttribute('auto')) {
+                        this.go();
+                    }
+                },
+
+                go: function() {
+
+                    var options = {
+                        type: this.method,
+                        url: this.url,
+                        dataType: this.dataType,
+                        contentType: this.contentType,
+
+                        success: function(data, status, xhr){
+                            var oldVal = me.response;
+                            me.response = JSON.stringify(data);
+
+                            fox.fireEvent(me, 'data-change', {
+                                'detail' : {
+                                    oldVal : oldVal,
+                                    newVal : data
+                                }
+                            });
+
+                            fox.fireEvent(me, 'success', {
+                                'detail' : {
+                                    data: data,
+                                    status: status,
+                                    xhr: xhr
+                                }
+                            });
+                        },
+
+                        error: function(xhr, errorType, error){
+                            fox.fireEvent(me, 'error', {
+                                'detail' : {
+                                    errorType: errorType,
+                                    error: error,
+                                    xhr: xhr
+                                }
+                            });
+                        },
+
+                        complete: function(){
+                            fox.fireEvent(me, 'complete');
+                        }
+                    };
+
+                    var me = this;
+
+                    if (this.params) {
+                        options.data = JSON.parse(this.params);
+                    }
+
+                    if (this.headers) {
+                        options.headers = JSON.parse(this.headers);
+                    }
+
+                    $.ajax(options);
+                }
+            }
+
+		});
+    </script>
+
+</fox-element>
