@@ -13,6 +13,7 @@
         <link rel="stylesheet" href="../../fox-icon/dist/css/fox-icon.css">
         <link rel="stylesheet" href="../../fox-page-content/dist/fox-page-content.css">
         <script src="../../fox-core/dist/foxui.js"></script>
+        <script src="../../fox-core/lib/rivets.js"></script>
         <link rel="import" href="../../fox-toolbar/dist/fox-toolbar.html"/>
         <link rel="import" href="../../fox-icon/dist/fox-icon.html"/>
         <link rel="import" href="../../fox-page-content/dist/fox-page-content.html"/>
@@ -66,16 +67,21 @@
         </style>
     </head>
     <body>
+        <script>
+            rivets.formatters.params = function(value){
+              return '{"q":"'+value+'"}';
+            }
+        </script>
         <fox-page>
             <fox-toolbar title="豆瓣图书">
             </fox-toolbar>
 
             <fox-page-content>
-                <fox-ajax auto url="https://api.douban.com/v2/book/search" params='{"q":"javascript"}' dataType="jsonp"></fox-ajax>
+                <fox-ajax auto url="https://api.douban.com/v2/book/search" rv-params="param | params"  dataType="jsonp"></fox-ajax>
 
                 <div class="form">
                     <label>关键词:</label>
-                    <input id="keyword" value="javascript">
+                    <input id="keyword" rv-value="param" value="javascript">
                 </div>
 
                 <p>共计 { data.total } 条结果</p>
@@ -92,9 +98,11 @@
         <script>
             document.querySelector('#keyword').addEventListener('input', function(){
 
+                /*
                 this.value && (document.querySelector('fox-ajax').params = JSON.stringify({
-                    q: this.value
-                }));
+                                    q: this.value
+                                }));*/
+                
 
             }, false)
         </script>
