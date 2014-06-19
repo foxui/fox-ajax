@@ -6,7 +6,7 @@
         <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="black">
-        <title>Test of fox-page</title>
+        <title>Test of fox-ajax</title>
         <link rel="stylesheet" href="../../fox-core/dist/foxui.css">
         <link rel="stylesheet" href="../../fox-page/dist/fox-page.css">
         <link rel="stylesheet" href="../../fox-toolbar/dist/fox-toolbar.css">
@@ -23,35 +23,80 @@
         fox-page-content{
             padding: 10px;
         }
+
+        ul,li{
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+
+        .books li{
+            margin-bottom: 10px;
+            position: relative;
+            list-type: none;
+            width: 50%;
+            float: left;
+            height: 150px;
+        }
+
+        .books img{
+            position: absolute;
+            left: 50%;
+            width: 90%;
+            -webkit-transform: translateX(-50%);
+        }
+
+        .books .title{
+            white-space: nowrap;
+            position: absolute;
+            bottom: 0;
+            font-size: 12px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            width: 90%;
+            left: 5%;
+            color: #fff;
+            font-weight: bold;
+            padding-left: 5px;
+            height: 25px;
+            line-height: 25px;
+            background-color: rgba(0,0,0,.7);
+        }
+
         </style>
     </head>
     <body>
         <fox-page>
-            <fox-toolbar title="Home">
+            <fox-toolbar title="豆瓣图书">
             </fox-toolbar>
 
             <fox-page-content>
-                <a href="#" data-book="http://api.douban.com/v2/book/25841479" onclick="document.querySelector('fox-ajax').url=this.getAttribute('data-book')">罗马人的故事</a>
-                <a href="#" data-book="http://api.douban.com/v2/book/25845900" onclick="document.querySelector('fox-ajax').url=this.getAttribute('data-book')">文明史</a>
-                <a href="#" data-book="http://api.douban.com/v2/book/25872258" onclick="document.querySelector('fox-ajax').url=this.getAttribute('data-book')">黄衣王</a>
+                <fox-ajax auto url="https://api.douban.com/v2/book/search" params='{"q":"javascript"}' dataType="jsonp"></fox-ajax>
 
-                <fox-ajax auto url="http://api.douban.com/v2/book/24754123" dataType="jsonp"></fox-ajax>
+                <div class="form">
+                    <label>关键词:</label>
+                    <input id="keyword" value="javascript">
+                </div>
 
-                <h5>内容</h5>
-                <div id="summary"></div>
+                <p>共计 { data.total } 条结果</p>
 
-                <h5>代码</h5>
-                <div id="code" style="font-size:12px;margin: 5px;"></div>
+                <ul class="books">
+                    <li rv-each-book="data.books">
+                        <img rv-src="book.images.large">
+                        <span class="title">{ book.title }</span>
+                    </li>
+                </ul>
 
             </fox-page-content>
         </fox-page>
         <script>
-            document.querySelector('fox-ajax').addEventListener('data-change', function(e){
-                    document.querySelector('#summary').innerHTML = '<div><img src="' + e.detail.newVal.image + '"></div>' + e.detail.newVal.catalog.replace(/\n/g, '<br>');
+            document.querySelector('#keyword').addEventListener('input', function(){
 
-                    document.querySelector('#code').textContent = this.outerHTML;
-                },
-            false);
+                this.value && (document.querySelector('fox-ajax').params = JSON.stringify({
+                    q: this.value
+                }));
+
+            }, false)
         </script>
     </body>
 </html>

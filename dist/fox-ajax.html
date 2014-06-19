@@ -176,6 +176,10 @@
 
                         success: function(data, status, xhr){
                             var oldVal = me.response;
+
+                            // property
+                            me.data = data;
+
                             me.response = JSON.stringify(data);
 
                             fox.fireEvent(me, 'data-change', {
