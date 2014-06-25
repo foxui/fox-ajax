@@ -18,6 +18,7 @@
         <link rel="import" href="../../fox-icon/dist/fox-icon.html"/>
         <link rel="import" href="../../fox-page-content/dist/fox-page-content.html"/>
         <link rel="import" href="../../fox-page/dist/fox-page.html"/>
+        <link rel="import" href="../../fox-template/dist/fox-template.html"/>
 
         <link rel="import" href="../dist/fox-ajax.html"/>
         <style>
@@ -77,22 +78,23 @@
             </fox-toolbar>
 
             <fox-page-content>
-                <fox-ajax auto url="https://api.douban.com/v2/book/search" rv-params="param | params"  dataType="jsonp"></fox-ajax>
+                <fox-template>
+                    <fox-ajax auto url="https://api.douban.com/v2/book/search" rv-params="param | params"  dataType="jsonp"></fox-ajax>
 
-                <div class="form">
-                    <label>关键词:</label>
-                    <input id="keyword" rv-value="param" value="javascript">
-                </div>
+                    <div class="form">
+                        <label>关键词:</label>
+                        <input id="keyword" rv-value="param" value="javascript">
+                    </div>
 
-                <p>共计 { data.total } 条结果</p>
+                    <p>共计 { data.total } 条结果</p>
 
-                <ul class="books">
-                    <li rv-each-book="data.books">
-                        <img rv-src="book.images.large">
-                        <span class="title">{ book.title }</span>
-                    </li>
-                </ul>
-
+                    <ul class="books">
+                        <li rv-each-book="data.books">
+                            <img rv-src="book.images.large">
+                            <span class="title">{ book.title }</span>
+                        </li>
+                    </ul>
+                </fox-template>
             </fox-page-content>
         </fox-page>
     </body>
